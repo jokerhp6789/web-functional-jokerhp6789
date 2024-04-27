@@ -17,13 +17,22 @@ export const CurrentlyReading = ({
   sentences: string[];
 }) => {
   const currentSentence = sentences?.[currentSentenceIdx];
+  const [startIndex, endIndex] = currentWordRange;
 
   return (
     <div data-testid="currently-reading">
       <p id="current-sentence" testID="current-sentence">
         {currentSentence?.length
           ? currentSentence.split(' ').map((word, index) => {
-              return <span>{word}</span>;
+              if (index === startIndex) {
+                return (
+                  <span
+                    testID="current-word"
+                    style={{ color: 'red', fontSize: 20 }}
+                  >{` ${word}`}</span>
+                );
+              }
+              return ` ${word}`;
             })
           : null}
       </p>

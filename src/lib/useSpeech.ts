@@ -22,8 +22,34 @@ const useSpeech = (sentences: Array<string>) => {
   });
 
   useEffect(() => {
-    load(sentences?.[currentSentenceIdx]);
-  }, [sentences, currentSentenceIdx]);
+    if (playbackState === 'paused' || playbackState === 'ended') return;
+    readData();
+  }, [playbackState, sentences, currentWordRange, currentSentenceIdx]);
+
+  const readData = () => {
+    const currentSentence = sentences[currentSentenceIdx];
+    if (!currentSentence) {
+      setPlaybackState('ended');
+      setCurrentSentenceIdx(0);
+      setCurrentWordRange([0, 0]);
+      return;
+    }
+    const wordArr = currentSentence.split(' ');
+    let activeWord = '';
+    const activeWordIndex = currentWordRange[0];
+    const nextWordIndex = currentWordRange[1];
+    activeWord = wordArr?.[activeWordIndex];
+    setTimeout(() => {
+      if (activeWord) {
+        load(activeWord);
+        playSpeech();
+        setCurrentWordRange([nextWordIndex, nextWordIndex + 1]);
+      } else {
+        setCurrentSentenceIdx(currentSentenceIdx + 1);
+        setCurrentWordRange([0, 1]);
+      }
+    }, 500);
+  };
 
   const play = () => {
     setPlaybackState('playing');
